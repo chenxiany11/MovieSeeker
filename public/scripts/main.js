@@ -27,7 +27,7 @@ rhit.MainPageController = class {
 			const type = document.querySelector("#inputType").value;
 			rhit.fbMoviesManager.add(moviePic, name, type);
 			// $('#addQuoteDialog').modal('hide')
-
+			
 		});
 		$("#addQuoteDialog").on('show.bs.modal', (event) => {
 			// Pre animation
@@ -38,11 +38,34 @@ rhit.MainPageController = class {
 		$("#addQuoteDialog").on('shown.bs.modal', (event) => {
 			document.querySelector("#inputMoviePic").focus();
 		});
-
-
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		  });
+		  
+		document.querySelector("#submitSearch").addEventListener("click", (event)=>{
+			const name = document.querySelector("#inputSearchMovie").value;
+			const i = rhit.fbMoviesManager.search(name);
+			rhit.fbMoviesManager.beginListening(this.searchMovie.bind(this,i));
+		});
 		rhit.fbMoviesManager.beginListening(this.updateList.bind(this));
 	}
-
+	searchMovie(i) {
+		const newList = htmlToElement('<div id="movieListContainer"><div>');
+		const m = rhit.fbMoviesManager.getMovieAtIndex(i);
+		console.log(m.movie);
+			console.log(m.type);
+			const newCard = this._createCard(m);
+			newCard.onclick = (event) => {
+				// console.log(`You clicked on ${mq.id}`);
+				// rhit.storage.setMovieQuoteId(mq.id);
+				window.location.href = `/mainpage.html?id=${m.id}`;
+			};
+			newList.appendChild(newCard);
+			const oldList = document.querySelector("#movieListContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
 	updateList() {
 		const newList = htmlToElement('<div id="movieListContainer"><div>');
 		for (let i = 0; i < rhit.fbMoviesManager.length; i++) {
@@ -94,7 +117,20 @@ rhit.FbMoviesManager = class {
 		this._unsubscribe = null;
 
 	}
-
+	search(name){
+		console.log("search movie by name: "+`${name}`);
+		const size = this._documentSnapshots.length;
+		for (var i= 0; i<size; i++){
+			const docSnapshot = this._documentSnapshots[i];
+			if (name == docSnapshot.get(rhit.FB_KEY_NAME)){
+				console.log(`${name}` + " Movie Found");
+				return i;
+				
+			}
+		}
+		console.log("no items found");
+	
+	}
 	add(moviePic, name, type){
 		console.log("add movie"+`${name}`);
 		console.log("type is"+`${type}`);
@@ -241,3 +277,4 @@ rhit.main = function () {
 };
 
 rhit.main();
+

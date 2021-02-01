@@ -59,7 +59,9 @@ body {
 .bmd-layout-content {
     height: 100vh;
 }
-
+.bmd-layout-drawer {
+    height: 100vh;
+}
 .bmd-layout-drawer>header{
     background-color: #800000;
     color: white;
@@ -75,4 +77,8 @@ body {
 
 #menuEdit, #menuDelete{
     display:none;
+}
+
+#search {
+    margin-left: 10vw;
 }
