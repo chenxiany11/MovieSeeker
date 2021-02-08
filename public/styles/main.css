@@ -56,8 +56,11 @@ body {
     border-radius: 5px;
 }
 
-.bmd-layout-content {
+/* .bmd-layout-content {
     height: 100vh;
+} */
+.bmd-layout-container {
+    /* position: fixed; */
 }
 .bmd-layout-drawer {
     height: 100vh;
@@ -82,3 +85,48 @@ body {
 #search {
     margin-left: 10vw;
 }
+/* .bmd-layout-backdrop{
+    height: 100vh;
+} */
+#detailPage{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+#movieTitle{
+    margin-bottom: 100px;
+}
+.btn-outline-primary{
+    margin:20px;
+}
+#contentContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#Review{
+    display: flex;
+    flex-direction: column;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+#reviewTitle{
+    margin-top:40px;
+    /* margin-left: 100px; */
+}
+
+#profilePage{
+    display:flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+#userContainer{
+    margin-top: 50px;
+    margin-left: 200px;
+}
+
+
+

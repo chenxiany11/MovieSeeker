@@ -8,7 +8,7 @@ rhit.FB_KEY_NAME = "Name";
 rhit.FB_KEY_RATING = "rating";
 rhit.FB_KEY_TYPE = "type";
 rhit.fbMoviesManager = null;
-rhit.fbSingleQuotesManager = null;
+rhit.fbSingleMovieManager = null;
 rhit.fbAuthManager = null;
 
 function htmlToElement(html) {
@@ -21,7 +21,23 @@ function htmlToElement(html) {
 rhit.MainPageController = class {
 	constructor() {
 		// let promise = fetch('https://www.omdbapi.com/?apikey=691ddc11&t=the+lego+movie').then( response => response.json()) .then(data => console.log(data));
-		document.querySelector("#submitAddQuote").addEventListener("click", (event) => {
+		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
+			console.log("Show all movies");
+			window.location.href="/mainpage.html";
+
+		});
+		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
+			console.log("Show my favorites");
+			window.location.href=`/mainpage.html?uid=${rhit.fbAuthManager.uid}`;
+
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		  });
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event)=>{
+			window.location.href=`/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#submitAddMovie").addEventListener("click", (event) => {
 			const moviePic = document.querySelector("#inputMoviePic").value;
 			const name = document.querySelector("#inputMovie").value;
 			const type = document.querySelector("#inputType").value;
@@ -29,18 +45,16 @@ rhit.MainPageController = class {
 			// $('#addQuoteDialog').modal('hide')
 			
 		});
-		$("#addQuoteDialog").on('show.bs.modal', (event) => {
+		$("#addMovieDialog").on('show.bs.modal', (event) => {
 			// Pre animation
 			document.querySelector("#inputMoviePic").value = "";
 			document.querySelector("#inputMovie").value = "";
 			document.querySelector('#inputType').value = "";
 		});
-		$("#addQuoteDialog").on('shown.bs.modal', (event) => {
+		$("#addMovieDialog").on('shown.bs.modal', (event) => {
 			document.querySelector("#inputMoviePic").focus();
 		});
-		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
-			rhit.fbAuthManager.signOut();
-		  });
+		
 		  
 		document.querySelector("#submitSearch").addEventListener("click", (event)=>{
 			const name = document.querySelector("#inputSearchMovie").value;
@@ -58,7 +72,7 @@ rhit.MainPageController = class {
 			newCard.onclick = (event) => {
 				// console.log(`You clicked on ${mq.id}`);
 				// rhit.storage.setMovieQuoteId(mq.id);
-				window.location.href = `/mainpage.html?id=${m.id}`;
+				window.location.href = `/movie.html?id=${m.id}`;
 			};
 			newList.appendChild(newCard);
 			const oldList = document.querySelector("#movieListContainer");
@@ -76,7 +90,7 @@ rhit.MainPageController = class {
 			newCard.onclick = (event) => {
 				// console.log(`You clicked on ${mq.id}`);
 				// rhit.storage.setMovieQuoteId(mq.id);
-				window.location.href = `/mainpage.html?id=${m.id}`;
+				window.location.href = `/movie.html?id=${m.id}`;
 			};
 			newList.appendChild(newCard);
 		}
@@ -99,6 +113,115 @@ rhit.MainPageController = class {
 
 	
 }
+
+
+
+rhit.DetailPageController = class {
+	constructor() {
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+			console.log("Sign out");
+
+		});
+		// document.querySelector("#submitEditQuote").addEventListener("click", (event) => {
+		// 	const quote = document.querySelector("#inputQuote").value;
+		// 	const movie = document.querySelector("#inputMovie").value;
+		// 	rhit.fbSingleQuotesManager.update(quote, movie);
+		// 	// $('#addQuoteDialog').modal('hide')
+
+		// });
+		// $("#editQuoteDialog").on('show.bs.modal', (event) => {
+		// 	// Pre animation
+		// 	document.querySelector("#inputQuote").value = rhit.fbSingleQuotesManager.quote;
+		// 	document.querySelector("#inputMovie").value = rhit.fbSingleQuotesManager.movie;
+		// });
+		// $("#editQuoteDialog").on('shown.bs.modal', (event) => {
+		// 	document.querySelector("#inputQuote").focus();
+		// });
+
+		// document.querySelector("#submitDeleteQuote").addEventListener("click", (event) => {
+
+		// 	rhit.fbSingleQuotesManager.delete().then(function () {
+		// 		console.log("Document successfully deleted!");
+		// 		window.location.href = "/list.html"
+		// 	}).catch(function (error) {
+		// 		console.error("Error removing document: ", error);
+		// 	});;
+
+		// });
+
+		rhit.fbSingleMovieManager.beginListening(this.updateView.bind(this));
+	}
+
+
+	updateView() {
+		console.log(rhit.fbSingleMovieManager);
+		document.querySelector("#movieImg").src = rhit.fbSingleMovieManager.moviePic;
+		document.querySelector("#movieTitle").innerHTML = rhit.fbSingleMovieManager.movieName;
+		// if(rhit.fbSingleQuotesManager.author == rhit.fbAuthManager.uid){
+		// 	document.querySelector("#menuEdit").style.display = "flex";
+		// 	document.querySelector("#menuDelete").style.display = "flex";
+		// }
+	}
+}
+
+rhit.FbSingleMovieManager = class {
+	constructor(movieQuoteId) {
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_MOVIE).doc(movieQuoteId);
+		//   console.log(`listening to ${this._ref.path}`);
+	}
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.onSnapshot((doc) => {
+			if (doc.exists) {
+				console.log("Document data:", doc.data());
+				console.log(doc.data().MoviePic);
+				this._documentSnapshot = doc;
+				changeListener();
+			} else {
+				// doc.data() will be undefined in this case
+				console.log("No such document!");
+				// window.location.href='/';
+			}
+		});
+
+
+	}
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	update(quote, movie) {
+		this._ref.update({
+				[rhit.FB_KEY_QUOTE]: quote,
+				[rhit.FB_KEY_MOVIE]: movie,
+				[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now(),
+			})
+			.then(() => {
+				console.log("Document updated");
+			})
+			.catch(function (error) {
+				console.error("Error adding document: ", error);
+			});
+	}
+	delete() {
+		return this._ref.delete();
+	}
+
+	get moviePic() {
+		return this._documentSnapshot.get(rhit.FB_KEY_MOVIEPIC);
+	}
+
+	get movieName() {
+		return this._documentSnapshot.get(rhit.FB_KEY_NAME);
+	}
+
+	get author() {
+		return this._documentSnapshot.get(rhit.FB_KEY_AUTHOR);
+	}
+}
+
 rhit.Movie = class {
 	constructor(id, MoviePic, Name, Rating, Type){
 		this.id = id;
@@ -176,6 +299,8 @@ rhit.FbMoviesManager = class {
 		return movie;
 	}
 }
+
+
 rhit.LoginPageController = class {
 	constructor() {
 		document.querySelector("#rosefireButton").onclick = (event) => {
@@ -195,7 +320,14 @@ rhit.checkForRedirects = function(){
 	}
 
 }
-
+rhit.ProfilePageController = class{
+	constructor(){
+		const urlParams = new URLSearchParams(window.location.search)
+		console.log(urlParams.get('uid'));
+		document.querySelector("#name").innerHTML = urlParams.get('uid');
+		document.querySelector("#userName").innerHTML = urlParams.get('uid')+"@rose-hulman.edu"
+	}
+}
 rhit.initializePage = function(){
 	if (document.querySelector("#mainPage")) {
 		console.log("You are on the main page.");
@@ -208,8 +340,31 @@ rhit.initializePage = function(){
 
 	if (document.querySelector("#loginPage")) {
 		console.log("You are on the login page.");
-
 		new rhit.LoginPageController();
+	}
+
+	if (document.querySelector("#detailPage")) {
+		 console.log("You are on the detail page.");
+		// const mqId = rhit.storage.getMovieQuoteId();
+		// console.log(`Detail page for ${mqId}`);
+
+		const queryString = window.location.search;
+		console.log(queryString);
+		const urlParams = new URLSearchParams(queryString)
+		const mqId = urlParams.get('id')
+		console.log(mqId);
+		if (!mqId) {
+			console.log("Error! Missing movie quote id!");
+			window.location.href = "/";
+		}
+		rhit.fbSingleMovieManager = new rhit.FbSingleMovieManager(mqId);
+		new rhit.DetailPageController();
+
+	}
+
+	if(document.querySelector("#profilePage")){
+		console.log("You are on profile page");
+		new rhit.ProfilePageController();
 	}
 
 	
@@ -227,12 +382,13 @@ rhit.FbAuthManager = class {
 	}
 	signIn() {
 		console.log("TODO: Sign in using Rosefire");
-
+		
 		Rosefire.signIn("13a2bd83-37fd-4ce1-872f-556b3c88757d", (err, rfUser) => {
 			if (err) {
 				console.log("Rosefire error!", err);
 				return;
 			}
+			console.log(Rosefire.rfUser);
 			console.log("Rosefire success!", rfUser);
 
 			firebase.auth().signInWithCustomToken(rfUser.token).then((user)=>{
