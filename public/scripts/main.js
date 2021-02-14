@@ -7,7 +7,11 @@ rhit.FB_KEY_MOVIEPIC = "MoviePic";
 rhit.FB_KEY_NAME = "Name";
 rhit.FB_KEY_RATING = "rating";
 rhit.FB_KEY_TYPE = "type";
+rhit.FB_KEY_MOVIE = "Movie";
+rhit.FB_KEY_REVIEW = "Review";
+
 rhit.fbMoviesManager = null;
+rhit.fbReviewsManager = null;
 rhit.fbSingleMovieManager = null;
 rhit.fbAuthManager = null;
 
@@ -36,6 +40,9 @@ rhit.MainPageController = class {
 		  });
 		document.querySelector("#menuShowMyProfile").addEventListener("click", (event)=>{
 			window.location.href=`/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event)=>{
+			window.location.href=`/review.html?uid=${rhit.fbAuthManager.uid}`
 		});
 		document.querySelector("#submitAddMovie").addEventListener("click", (event) => {
 			const moviePic = document.querySelector("#inputMoviePic").value;
@@ -114,7 +121,113 @@ rhit.MainPageController = class {
 	
 }
 
+rhit.ReviewsPageController = class {
+	constructor() {
+		// let promise = fetch('https://www.omdbapi.com/?apikey=691ddc11&t=the+lego+movie').then( response => response.json()) .then(data => console.log(data));
+		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
+			console.log("Show all movies");
+			window.location.href="/mainpage.html";
 
+		});
+		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
+			console.log("Show my favorites");
+			window.location.href=`/mainpage.html?uid=${rhit.fbAuthManager.uid}`;
+
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		  });
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event)=>{
+			window.location.href=`/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event)=>{
+			window.location.href=`/review.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		
+	}
+	
+	updateList() {
+		const newList = htmlToElement('<div id="reviewListContainer"><div>');
+		for (let i = 0; i < rhit.fbReviewssManager.length; i++) {
+			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
+			console.log(m.movie);
+			console.log(m.rating);
+			console.log(m.rating);
+			const newCard = this._createCard(m);
+			// newCard.onclick = (event) => {
+			// 	window.location.href = `/movie.html?id=${m.id}`;
+			// };
+			newList.appendChild(newCard);
+		}
+		const oldList = document.querySelector("#reviewListContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
+
+	_createCard(review) {
+		return htmlToElement(`<div class="card">
+		<div class="card-body">
+		  <h5 class="card-title">${review.movie}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+		  <h6 class="card-subtitle mb-2 text-muted">${review.rating}</h6>
+		</div>
+	  </div>`);
+	}
+	
+}
+rhit.FbReviewsManager = class {
+	constructor(){
+		// this._uid = uid;
+		console.log("create review manager");
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_REVIEW);
+		this._unsubscribe = null;
+
+	}
+	add(movie, rating, review){
+		console.log("add review for movie"+`${movie}`);
+		console.log("rating is"+`${rating}`+"Review is: "+`${review}`);
+		this._ref.add({
+			[rhit.FB_KEY_MOVIE]: movie,
+			[rhit.FB_KEY_RATING]: rating,
+			[rhit.FB_KEY_REVIEW]: 0,
+		}).then(function (docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch(function (error) {
+			console.error("Error adding document: ", error);
+		});
+		
+	}
+
+	beginListening(changeListener){
+		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot)=>{
+				console.log("review update");
+				this._documentSnapshots = querySnapshot.docs;
+				changeListener();
+		});
+	}
+
+	stopListening(){
+		this._unsubscribe();
+	}
+
+	get length() {
+		return this._documentSnapshots.length;
+	}
+
+	getReviewAtIndex(index){
+		const docSnapshot = this._documentSnapshots[index];
+		const review = new rhit.Review(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_MOVIE),
+			docSnapshot.get(rhit.FB_KEY_RATING),
+			docSnapshot.get(rhit.FB_KEY_REVIEW));
+
+		return review;
+	}
+}
 
 rhit.DetailPageController = class {
 	constructor() {
@@ -366,7 +479,10 @@ rhit.initializePage = function(){
 		console.log("You are on profile page");
 		new rhit.ProfilePageController();
 	}
-
+	if(document.querySelector("#reviewsPage")){
+		console.log("You are on reviews page");
+		new rhit.ReviewsPageController();
+	}
 	
 }
 rhit.FbAuthManager = class {
