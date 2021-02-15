@@ -194,9 +194,9 @@ rhit.FbReviewsManager = class {
 		console.log("rating is"+`${rating}`+"Review is: "+`${review}`);
 		this._ref.add({
 			[rhit.FB_KEY_MOVIE]: movie,
-			[rhit.FB_KEY_RATING]: rating,
-			[rhit.FB_KEY_USERID]: this._uid,
-			[rhit.FB_KEY_REVIEW]: 0,
+			[rhit.FB_KEY_RATING]: parseInt(rating),
+			[rhit.FB_KEY_USERID]: "linj3",
+			[rhit.FB_KEY_REVIEW]: review,
 		}).then(function (docRef) {
 			console.log("Document written with ID: ", docRef.id);
 		})
@@ -249,18 +249,22 @@ rhit.DetailPageController = class {
 			console.log("Sign out");
 
 		});
-		// document.querySelector("#submitEditQuote").addEventListener("click", (event) => {
-		// 	const quote = document.querySelector("#inputQuote").value;
-		// 	const movie = document.querySelector("#inputMovie").value;
-		// 	rhit.fbSingleQuotesManager.update(quote, movie);
-		// 	// $('#addQuoteDialog').modal('hide')
-
-		// });
-		// $("#editQuoteDialog").on('show.bs.modal', (event) => {
-		// 	// Pre animation
-		// 	document.querySelector("#inputQuote").value = rhit.fbSingleQuotesManager.quote;
-		// 	document.querySelector("#inputMovie").value = rhit.fbSingleQuotesManager.movie;
-		// });
+		document.querySelector("#submitAddReview").addEventListener("click", (event) => {
+			console.log("add review button clicked");
+			const review = document.querySelector("#inputReview").value;
+            const rating = document.querySelector("#inputRating").value;
+			const movie = rhit.fbSingleMovieManager.movieName;
+			console.log(rhit.fbReviewsManager);
+			console.log(movie);
+			console.log(review);
+			console.log(rating);
+			rhit.fbReviewsManager.add(movie, rating, review);
+		});
+		$("#reviewDialog").on('show.bs.modal', (event) => {
+			// Pre animation
+			document.querySelector("#inputRating").value = rhit.fbSingleMovieManager.rating;
+			document.querySelector("#inputReview").value = rhit.fbSingleMovieManager.review;
+		});
 		// $("#editQuoteDialog").on('shown.bs.modal', (event) => {
 		// 	document.querySelector("#inputQuote").focus();
 		// });
@@ -484,6 +488,7 @@ rhit.initializePage = function(){
 			window.location.href = "/";
 		}
 		rhit.fbSingleMovieManager = new rhit.FbSingleMovieManager(mqId);
+		rhit.fbReviewsManager = new rhit.FbReviewsManager(rhit.FbAuthManager.uid);
 		new rhit.DetailPageController();
 
 	}

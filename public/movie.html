@@ -30,7 +30,7 @@
     <div id="contentContainer">
         <h3 id="movieTitle">Harry Potter</h3>
         <button type="button" class="btn btn-outline-primary" >Add Favorite</button>
-        <button type="button" class="btn btn-outline-primary" >Add Review</button>
+        <button id="addReviewButton" type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#reviewDialog">Add Review</button>
     </div>
     
     
@@ -58,48 +58,25 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="editQuoteDialog" tabindex="-1" role="dialog" aria-labelledby="Add quote dialog" aria-hidden="true">
+<div class="modal fade" id="reviewDialog" tabindex="-1" role="dialog" aria-labelledby="Add review dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" >Edit this Movie Quote</h5>
+        <h5 class="modal-title" >Add Review for the Movie</h5>
       </div>
       <div class="modal-body">
-
-        
-          <div class="form-group bmd-form-group"> 
-            <label for="inputQuote">Quote</label>
-            <input type="text" class="form-control" id="inputQuote" placeholder="">
-          </div>
-          <div class="form-group bmd-form-group"> 
-            <label for="inputMovie">Movie</label>
-            <input type="text" class="form-control" id="inputMovie" placeholder="">
-            <span class="bmd-help">What movie is this quote from?</span>
-          </div>
-        
-
-
+        <div class="form-group bmd-form-group">
+          <label for="inputRating" class="bmd-label-floating">Rating</label>
+          <input type="number" class="form-control" id="inputRating">
+        </div>
+        <div class="form-group bmd-form-group">
+          <label for="inputReview" class="bmd-label-floating">Review</label>
+          <input type="text" class="form-control" id="inputReview">
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
-        <button id="submitEditQuote" type="button" class="btn btn-primary" data-dismiss="modal">UPDATE</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="deleteQuoteDialog" tabindex="-1" role="dialog" aria-labelledby="Add quote dialog" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" >Delete this Movie Quote</h5>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to delete this movie quote?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
-        <button id="submitDeleteQuote" type="button" class="btn btn-primary" data-dismiss="modal">DELETE</button>
+        <button id="submitAddReview" type="button" class="btn btn-primary" data-dismiss="modal">SUBMIT</button>
       </div>
     </div>
   </div>
