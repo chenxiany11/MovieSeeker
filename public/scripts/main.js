@@ -79,7 +79,7 @@ rhit.MainPageController = class {
 			newCard.onclick = (event) => {
 				// console.log(`You clicked on ${mq.id}`);
 				// rhit.storage.setMovieQuoteId(mq.id);
-				window.location.href = `/movie.html?id=${m.id}`;
+				window.location.href = `/movie.html?id=${m.id}&uid=${rhit.fbAuthManager.uid}`;
 			};
 			newList.appendChild(newCard);
 			const oldList = document.querySelector("#movieListContainer");
@@ -181,8 +181,8 @@ rhit.ReviewsPageController = class {
 	
 }
 rhit.FbReviewsManager = class {
-	constructor(uid){
-		this._uid = uid;
+	constructor(){
+		//this._uid = uid;
 		console.log("create review manager");
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_REVIEW);
@@ -195,7 +195,7 @@ rhit.FbReviewsManager = class {
 		this._ref.add({
 			[rhit.FB_KEY_MOVIE]: movie,
 			[rhit.FB_KEY_RATING]: parseInt(rating),
-			[rhit.FB_KEY_USERID]: "linj3",
+			[rhit.FB_KEY_USERID]: rhit.fbAuthManager.uid,
 			[rhit.FB_KEY_REVIEW]: review,
 		}).then(function (docRef) {
 			console.log("Document written with ID: ", docRef.id);
@@ -283,6 +283,38 @@ rhit.DetailPageController = class {
 		rhit.fbSingleMovieManager.beginListening(this.updateView.bind(this));
 	}
 
+	updateList() {
+		const newList = htmlToElement('<div id="reviewContainer"><div>');
+		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
+			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
+			
+			console.log(m.movie);
+			console.log(m.rating);
+			console.log(m.userid);
+			if(m.userid == rhit.fbAuthManager.uid){
+			const newCard = this._createCard(m);
+			newList.appendChild(newCard);
+			}
+			// newCard.onclick = (event) => {
+			// 	window.location.href = `/movie.html?id=${m.id}`;
+			// };
+			
+		}
+		const oldList = document.querySelector("#reviewContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
+
+	_createCard(review) {
+		return htmlToElement(`<div class="card">
+		<div class="card-body">
+		  <h5 class="card-title">${review.movie}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+		  <h6 class="card-subtitle mb-2 text-muted">${review.rating}</h6>
+		</div>
+	  </div>`);
+	}
 
 	updateView() {
 		console.log(rhit.fbSingleMovieManager);
@@ -292,6 +324,27 @@ rhit.DetailPageController = class {
 		// 	document.querySelector("#menuEdit").style.display = "flex";
 		// 	document.querySelector("#menuDelete").style.display = "flex";
 		// }
+		const newList = htmlToElement('<div id="reviewContainer"><div>');
+		console.log(rhit.fbReviewsManager);
+		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
+			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
+			
+			console.log(m.movie);
+			console.log(m.rating);
+			console.log(m.userid);
+			// if(m.userid == rhit.fbAuthManager.uid){
+			const newCard = this._createCard(m);
+			newList.appendChild(newCard);
+			// }
+			// newCard.onclick = (event) => {
+			// 	window.location.href = `/movie.html?id=${m.id}`;
+			// };
+			
+		}
+		const oldList = document.querySelector("#reviewContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
 	}
 }
 
@@ -465,6 +518,7 @@ rhit.initializePage = function(){
 		const uid = urlParams.get('uid')
 		console.log(`uid is ${uid}`);
 		rhit.fbMoviesManager = new rhit.FbMoviesManager(uid);
+		rhit.fbReviewsManager = new rhit.FbReviewsManager();
 		new rhit.MainPageController();
 	}
 
@@ -488,7 +542,7 @@ rhit.initializePage = function(){
 			window.location.href = "/";
 		}
 		rhit.fbSingleMovieManager = new rhit.FbSingleMovieManager(mqId);
-		rhit.fbReviewsManager = new rhit.FbReviewsManager(rhit.FbAuthManager.uid);
+		rhit.fbReviewsManager = new rhit.FbReviewsManager();
 		new rhit.DetailPageController();
 
 	}
@@ -502,7 +556,7 @@ rhit.initializePage = function(){
 		const urlParams = new URLSearchParams(window.location.search)
 		const uid = urlParams.get('uid')
 		console.log(`uid is ${uid}`);
-		rhit.fbReviewsManager = new rhit.FbReviewsManager(uid);
+		rhit.fbReviewsManager = new rhit.FbReviewsManager();
 		new rhit.ReviewsPageController();
 	}
 	
