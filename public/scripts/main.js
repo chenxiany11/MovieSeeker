@@ -150,14 +150,18 @@ rhit.ReviewsPageController = class {
 		const newList = htmlToElement('<div id="reviewListContainer"><div>');
 		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
 			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
+			
 			console.log(m.movie);
 			console.log(m.rating);
-			console.log(m.rating);
+			console.log(m.userid);
+			if(m.userid == rhit.fbAuthManager.uid){
 			const newCard = this._createCard(m);
+			newList.appendChild(newCard);
+			}
 			// newCard.onclick = (event) => {
 			// 	window.location.href = `/movie.html?id=${m.id}`;
 			// };
-			newList.appendChild(newCard);
+			
 		}
 		const oldList = document.querySelector("#reviewListContainer");
 		oldList.removeAttribute("id");
