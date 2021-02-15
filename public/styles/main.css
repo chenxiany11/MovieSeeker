@@ -59,12 +59,15 @@ body {
 /* .bmd-layout-content {
     height: 100vh;
 } */
+
+
 .bmd-layout-container {
+    position: static;
+}
+/* .bmd-layout-drawer { */
+    /* height: 100vh; */
     /* position: fixed; */
-}
-.bmd-layout-drawer {
-    height: 100vh;
-}
+/* } */
 .bmd-layout-drawer>header{
     background-color: #800000;
     color: white;
