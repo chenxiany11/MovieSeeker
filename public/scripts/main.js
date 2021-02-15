@@ -27,22 +27,22 @@ rhit.MainPageController = class {
 		// let promise = fetch('https://www.omdbapi.com/?apikey=691ddc11&t=the+lego+movie').then( response => response.json()) .then(data => console.log(data));
 		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
 			console.log("Show all movies");
-			window.location.href="/mainpage.html";
+			window.location.href = "/mainpage.html";
 
 		});
 		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
 			console.log("Show my favorites");
-			window.location.href=`/mainpage.html?uid=${rhit.fbAuthManager.uid}`;
+			window.location.href = `/mainpage.html?uid=${rhit.fbAuthManager.uid}`;
 
 		});
 		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
 			rhit.fbAuthManager.signOut();
-		  });
-		document.querySelector("#menuShowMyProfile").addEventListener("click", (event)=>{
-			window.location.href=`/profile.html?uid=${rhit.fbAuthManager.uid}`
 		});
-		document.querySelector("#menuShowMyReviews").addEventListener("click", (event)=>{
-			window.location.href=`/review.html?uid=${rhit.fbAuthManager.uid}`
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
+			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
+			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
 		});
 		document.querySelector("#submitAddMovie").addEventListener("click", (event) => {
 			const moviePic = document.querySelector("#inputMoviePic").value;
@@ -50,7 +50,7 @@ rhit.MainPageController = class {
 			const type = document.querySelector("#inputType").value;
 			rhit.fbMoviesManager.add(moviePic, name, type);
 			// $('#addQuoteDialog').modal('hide')
-			
+
 		});
 		$("#addMovieDialog").on('show.bs.modal', (event) => {
 			// Pre animation
@@ -61,12 +61,12 @@ rhit.MainPageController = class {
 		$("#addMovieDialog").on('shown.bs.modal', (event) => {
 			document.querySelector("#inputMoviePic").focus();
 		});
-		
-		  
-		document.querySelector("#submitSearch").addEventListener("click", (event)=>{
+
+
+		document.querySelector("#submitSearch").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputSearchMovie").value;
 			const i = rhit.fbMoviesManager.search(name);
-			rhit.fbMoviesManager.beginListening(this.searchMovie.bind(this,i));
+			rhit.fbMoviesManager.beginListening(this.searchMovie.bind(this, i));
 		});
 		rhit.fbMoviesManager.beginListening(this.updateList.bind(this));
 	}
@@ -74,15 +74,15 @@ rhit.MainPageController = class {
 		const newList = htmlToElement('<div id="movieListContainer"><div>');
 		const m = rhit.fbMoviesManager.getMovieAtIndex(i);
 		console.log(m.movie);
-			console.log(m.type);
-			const newCard = this._createCard(m);
-			newCard.onclick = (event) => {
-				// console.log(`You clicked on ${mq.id}`);
-				// rhit.storage.setMovieQuoteId(mq.id);
-				window.location.href = `/movie.html?id=${m.id}&uid=${rhit.fbAuthManager.uid}`;
-			};
-			newList.appendChild(newCard);
-			const oldList = document.querySelector("#movieListContainer");
+		console.log(m.type);
+		const newCard = this._createCard(m);
+		newCard.onclick = (event) => {
+			// console.log(`You clicked on ${mq.id}`);
+			// rhit.storage.setMovieQuoteId(mq.id);
+			window.location.href = `/movie.html?id=${m.id}&uid=${rhit.fbAuthManager.uid}`;
+		};
+		newList.appendChild(newCard);
+		const oldList = document.querySelector("#movieListContainer");
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
@@ -118,7 +118,7 @@ rhit.MainPageController = class {
 	  </div>`);
 	}
 
-	
+
 }
 
 rhit.ReviewsPageController = class {
@@ -126,42 +126,42 @@ rhit.ReviewsPageController = class {
 		// let promise = fetch('https://www.omdbapi.com/?apikey=691ddc11&t=the+lego+movie').then( response => response.json()) .then(data => console.log(data));
 		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
 			console.log("Show all movies");
-			window.location.href="/mainpage.html";
+			window.location.href = "/mainpage.html";
 
 		});
 		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
 			console.log("Show my favorites");
-			window.location.href=`/mainpage.html?uid=${rhit.fbAuthManager.uid}`;
+			window.location.href = `/mainpage.html?uid=${rhit.fbAuthManager.uid}`;
 
 		});
 		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
 			rhit.fbAuthManager.signOut();
-		  });
-		document.querySelector("#menuShowMyProfile").addEventListener("click", (event)=>{
-			window.location.href=`/profile.html?uid=${rhit.fbAuthManager.uid}`
 		});
-		document.querySelector("#menuShowMyReviews").addEventListener("click", (event)=>{
-			window.location.href=`/review.html?uid=${rhit.fbAuthManager.uid}`
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
+			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
+			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
 		});
 		rhit.fbReviewsManager.beginListening(this.updateList.bind(this));
 	}
-	
+
 	updateList() {
 		const newList = htmlToElement('<div id="reviewListContainer"><div>');
 		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
 			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
-			
+
 			console.log(m.movie);
 			console.log(m.rating);
 			console.log(m.userid);
-			if(m.userid == rhit.fbAuthManager.uid){
-			const newCard = this._createCard(m);
-			newList.appendChild(newCard);
+			if (m.userid == rhit.fbAuthManager.uid) {
+				const newCard = this._createCard(m);
+				newList.appendChild(newCard);
 			}
 			// newCard.onclick = (event) => {
 			// 	window.location.href = `/movie.html?id=${m.id}`;
 			// };
-			
+
 		}
 		const oldList = document.querySelector("#reviewListContainer");
 		oldList.removeAttribute("id");
@@ -178,10 +178,10 @@ rhit.ReviewsPageController = class {
 		</div>
 	  </div>`);
 	}
-	
+
 }
 rhit.FbReviewsManager = class {
-	constructor(){
+	constructor() {
 		//this._uid = uid;
 		console.log("create review manager");
 		this._documentSnapshots = [];
@@ -190,32 +190,32 @@ rhit.FbReviewsManager = class {
 		this._unsubscribe = null;
 
 	}
-	add(movie, rating, review){
-		console.log("add review for movie"+`${movie}`);
-		console.log("rating is"+`${rating}`+"Review is: "+`${review}`);
+	add(movie, rating, review) {
+		console.log("add review for movie" + `${movie}`);
+		console.log("rating is" + `${rating}` + "Review is: " + `${review}`);
 		this._ref.add({
-			[rhit.FB_KEY_MOVIE]: movie,
-			[rhit.FB_KEY_RATING]: parseInt(rating),
-			[rhit.FB_KEY_USERID]: rhit.fbAuthManager.uid,
-			[rhit.FB_KEY_REVIEW]: review,
-		}).then(function (docRef) {
-			console.log("Document written with ID: ", docRef.id);
-		})
-		.catch(function (error) {
-			console.error("Error adding document: ", error);
-		});
-		
+				[rhit.FB_KEY_MOVIE]: movie,
+				[rhit.FB_KEY_RATING]: parseInt(rating),
+				[rhit.FB_KEY_USERID]: rhit.fbAuthManager.uid,
+				[rhit.FB_KEY_REVIEW]: review,
+			}).then(function (docRef) {
+				console.log("Document written with ID: ", docRef.id);
+			})
+			.catch(function (error) {
+				console.error("Error adding document: ", error);
+			});
+
 	}
 
-	beginListening(changeListener){
-		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot)=>{
-				console.log("review update",querySnapshot.docs);
-				this._documentSnapshots = querySnapshot.docs;
-				changeListener();
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
+			console.log("review update", querySnapshot.docs);
+			this._documentSnapshots = querySnapshot.docs;
+			changeListener();
 		});
 	}
 
-	stopListening(){
+	stopListening() {
 		this._unsubscribe();
 	}
 
@@ -223,7 +223,7 @@ rhit.FbReviewsManager = class {
 		return this._documentSnapshots.length;
 	}
 
-	getReviewAtIndex(index){
+	getReviewAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
 		const review = new rhit.Review(
 			docSnapshot.get(rhit.FB_KEY_MOVIE),
@@ -235,8 +235,8 @@ rhit.FbReviewsManager = class {
 	}
 }
 
-rhit.Review = class{
-	constructor(Movie, Rating, Userid, Review){
+rhit.Review = class {
+	constructor(Movie, Rating, Userid, Review) {
 		this.movie = Movie;
 		this.rating = Rating;
 		this.userid = Userid;
@@ -253,7 +253,7 @@ rhit.DetailPageController = class {
 		document.querySelector("#submitAddReview").addEventListener("click", (event) => {
 			console.log("add review button clicked");
 			const review = document.querySelector("#inputReview").value;
-            const rating = document.querySelector("#inputRating").value;
+			const rating = document.querySelector("#inputRating").value;
 			const movie = rhit.fbSingleMovieManager.movieName;
 			console.log(rhit.fbReviewsManager);
 			console.log(movie);
@@ -264,7 +264,8 @@ rhit.DetailPageController = class {
 		$("#reviewDialog").on('show.bs.modal', (event) => {
 			// Pre animation
 			document.querySelector("#inputRating").value = rhit.fbSingleMovieManager.rating;
-			document.querySelector("#inputReview").value = rhit.fbSingleMovieManager.review;
+			document.querySelector("#inputReview").value = "";
+			//document.querySelector("#inputReview").value = rhit.fbSingleMovieManager.review;
 		});
 		// $("#editQuoteDialog").on('shown.bs.modal', (event) => {
 		// 	document.querySelector("#inputQuote").focus();
@@ -289,65 +290,94 @@ rhit.DetailPageController = class {
 		const newList = htmlToElement('<div id="reviewContainer"><div>');
 		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
 			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
-			
+
 			console.log(m.movie);
 			console.log(m.rating);
 			console.log(m.userid);
-			if(m.userid == rhit.fbAuthManager.uid){
-			const newCard = this._createCard(m);
-			newList.appendChild(newCard);
+			if (m.movie == rhit.fbSingleMovieManager.movieName) {
+				const newCard = this._createCard(m);
+				newList.appendChild(newCard);
 			}
-			// newCard.onclick = (event) => {
-			// 	window.location.href = `/movie.html?id=${m.id}`;
-			// };
-			
+			if (m.userid == rhit.fbAuthManager.uid) {
+				console.log("find xxxx");
+				document.getElementById("addReviewButton").disabled = true;
+			}
 		}
 		const oldList = document.querySelector("#reviewContainer");
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
+		
 	}
 
 	_createCard(review) {
+
+		if (review.rating == 1) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			  <h5 class="card-title">${review.movie}</h5>
+			  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`);
+		}else if (review.rating == 2) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			  <h5 class="card-title">${review.movie}</h5>
+			  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		}else if (review.rating == 3) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			  <h5 class="card-title">${review.movie}</h5>
+			  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		}else if (review.rating == 4) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			  <h5 class="card-title">${review.movie}</h5>
+			  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		}
 		return htmlToElement(`<div class="card">
-		<div class="card-body">
-		  <h5 class="card-title">${review.movie}</h5>
-		  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
-		  <h6 class="card-subtitle mb-2 text-muted">${review.rating}</h6>
-		</div>
-	  </div>`);
+			<div class="card-body">
+			  <h5 class="card-title">${review.movie}</h5>
+			  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
 	}
 
 	updateView() {
 		console.log(rhit.fbSingleMovieManager);
 		document.querySelector("#movieImg").src = rhit.fbSingleMovieManager.moviePic;
 		document.querySelector("#movieTitle").innerHTML = rhit.fbSingleMovieManager.movieName;
-		// if(rhit.fbSingleQuotesManager.author == rhit.fbAuthManager.uid){
-		// 	document.querySelector("#menuEdit").style.display = "flex";
-		// 	document.querySelector("#menuDelete").style.display = "flex";
-		// }
-		
-		const newList = htmlToElement('<div id="reviewContainer"><div>');
-		console.log(rhit.fbReviewsManager);
-		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
-			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
-			
-			console.log(m.movie);
-			console.log(m.rating);
-			console.log(m.userid);
-			// if(m.userid == rhit.fbAuthManager.uid){
-			const newCard = this._createCard(m);
-			newList.appendChild(newCard);
-			// }
-			// newCard.onclick = (event) => {
-			// 	window.location.href = `/movie.html?id=${m.id}`;
-			// };
-			
-		}
-		const oldList = document.querySelector("#reviewContainer");
-		oldList.removeAttribute("id");
-		oldList.hidden = true;
-		oldList.parentElement.appendChild(newList);
 	}
 }
 
@@ -356,7 +386,6 @@ rhit.FbSingleMovieManager = class {
 		this._documentSnapshot = {};
 		this._unsubscribe = null;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_MOVIE).doc(movieQuoteId);
-		//   console.log(`listening to ${this._ref.path}`);
 	}
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
@@ -366,9 +395,7 @@ rhit.FbSingleMovieManager = class {
 				this._documentSnapshot = doc;
 				changeListener();
 			} else {
-				// doc.data() will be undefined in this case
 				console.log("No such document!");
-				// window.location.href='/';
 			}
 		});
 
@@ -409,7 +436,7 @@ rhit.FbSingleMovieManager = class {
 }
 
 rhit.Movie = class {
-	constructor(id, MoviePic, Name, Rating, Type){
+	constructor(id, MoviePic, Name, Rating, Type) {
 		this.id = id;
 		this.moviePic = MoviePic;
 		this.name = Name;
@@ -418,7 +445,7 @@ rhit.Movie = class {
 	}
 }
 rhit.FbMoviesManager = class {
-	constructor(){
+	constructor() {
 		// this._uid = uid;
 		console.log("create movie manager");
 		this._documentSnapshots = [];
@@ -426,46 +453,46 @@ rhit.FbMoviesManager = class {
 		this._unsubscribe = null;
 
 	}
-	search(name){
-		console.log("search movie by name: "+`${name}`);
+	search(name) {
+		console.log("search movie by name: " + `${name}`);
 		const size = this._documentSnapshots.length;
-		for (var i= 0; i<size; i++){
+		for (var i = 0; i < size; i++) {
 			const docSnapshot = this._documentSnapshots[i];
-			if (name == docSnapshot.get(rhit.FB_KEY_NAME)){
+			if (name == docSnapshot.get(rhit.FB_KEY_NAME)) {
 				console.log(`${name}` + " Movie Found");
 				return i;
-				
+
 			}
 		}
 		console.log("no items found");
-	
+
 	}
-	add(moviePic, name, type){
-		console.log("add movie"+`${name}`);
-		console.log("type is"+`${type}`);
+	add(moviePic, name, type) {
+		console.log("add movie" + `${name}`);
+		console.log("type is" + `${type}`);
 		this._ref.add({
-			[rhit.FB_KEY_MOVIEPIC]: moviePic,
-			[rhit.FB_KEY_NAME]: name,
-			[rhit.FB_KEY_RATING]: 0,
-			[rhit.FB_KEY_TYPE]: type
-		}).then(function (docRef) {
-			console.log("Document written with ID: ", docRef.id);
-		})
-		.catch(function (error) {
-			console.error("Error adding document: ", error);
-		});
-		
+				[rhit.FB_KEY_MOVIEPIC]: moviePic,
+				[rhit.FB_KEY_NAME]: name,
+				[rhit.FB_KEY_RATING]: 0,
+				[rhit.FB_KEY_TYPE]: type
+			}).then(function (docRef) {
+				console.log("Document written with ID: ", docRef.id);
+			})
+			.catch(function (error) {
+				console.error("Error adding document: ", error);
+			});
+
 	}
 
-	beginListening(changeListener){
-		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot)=>{
-				console.log("Movie update");
-				this._documentSnapshots = querySnapshot.docs;
-				changeListener();
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
+			console.log("Movie update");
+			this._documentSnapshots = querySnapshot.docs;
+			changeListener();
 		});
 	}
 
-	stopListening(){
+	stopListening() {
 		this._unsubscribe();
 	}
 
@@ -473,7 +500,7 @@ rhit.FbMoviesManager = class {
 		return this._documentSnapshots.length;
 	}
 
-	getMovieAtIndex(index){
+	getMovieAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
 		const movie = new rhit.Movie(
 			docSnapshot.id,
@@ -496,25 +523,25 @@ rhit.LoginPageController = class {
 
 }
 
-rhit.checkForRedirects = function(){
-	if(document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn){
+rhit.checkForRedirects = function () {
+	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
 		window.location.href = "/mainpage.html";
 	}
 
-	if(!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSignedIn){
+	if (!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSignedIn) {
 		window.location.href = "/";
 	}
 
 }
-rhit.ProfilePageController = class{
-	constructor(){
+rhit.ProfilePageController = class {
+	constructor() {
 		const urlParams = new URLSearchParams(window.location.search)
 		console.log(urlParams.get('uid'));
 		document.querySelector("#name").innerHTML = urlParams.get('uid');
-		document.querySelector("#userName").innerHTML = urlParams.get('uid')+"@rose-hulman.edu"
+		document.querySelector("#userName").innerHTML = urlParams.get('uid') + "@rose-hulman.edu"
 	}
 }
-rhit.initializePage = function(){
+rhit.initializePage = function () {
 	if (document.querySelector("#mainPage")) {
 		console.log("You are on the main page.");
 		const urlParams = new URLSearchParams(window.location.search)
@@ -531,7 +558,7 @@ rhit.initializePage = function(){
 	}
 
 	if (document.querySelector("#detailPage")) {
-		 console.log("You are on the detail page.");
+		console.log("You are on the detail page.");
 		// const mqId = rhit.storage.getMovieQuoteId();
 		// console.log(`Detail page for ${mqId}`);
 
@@ -546,16 +573,15 @@ rhit.initializePage = function(){
 		}
 		rhit.fbSingleMovieManager = new rhit.FbSingleMovieManager(mqId);
 		rhit.fbReviewsManager = new rhit.FbReviewsManager();
-		// console.log(rhit.fbReviewsManager._ref.);
 		new rhit.DetailPageController();
 
 	}
 
-	if(document.querySelector("#profilePage")){
+	if (document.querySelector("#profilePage")) {
 		console.log("You are on profile page");
 		new rhit.ProfilePageController();
 	}
-	if(document.querySelector("#reviewsPage")){
+	if (document.querySelector("#reviewsPage")) {
 		console.log("You are on reviews page");
 		const urlParams = new URLSearchParams(window.location.search)
 		const uid = urlParams.get('uid')
@@ -563,7 +589,7 @@ rhit.initializePage = function(){
 		rhit.fbReviewsManager = new rhit.FbReviewsManager();
 		new rhit.ReviewsPageController();
 	}
-	
+
 }
 rhit.FbAuthManager = class {
 	constructor() {
@@ -578,7 +604,7 @@ rhit.FbAuthManager = class {
 	}
 	signIn() {
 		console.log("TODO: Sign in using Rosefire");
-		
+
 		Rosefire.signIn("13a2bd83-37fd-4ce1-872f-556b3c88757d", (err, rfUser) => {
 			if (err) {
 				console.log("Rosefire error!", err);
@@ -587,20 +613,19 @@ rhit.FbAuthManager = class {
 			console.log(Rosefire.rfUser);
 			console.log("Rosefire success!", rfUser);
 
-			firebase.auth().signInWithCustomToken(rfUser.token).then((user)=>{
-				console.log("Sign in successful");
-			}
-			)
-			.catch((error) =>{
-				// Handle Errors here.
-				var errorCode = error.code;
-				var errorMessage = error.message;
-				if (errorCode === 'auth/invalid-custom-token') {
-				  alert('The token you provided is not valid.');
-				} else {
-				  console.error(error);
-				}
-			  });
+			firebase.auth().signInWithCustomToken(rfUser.token).then((user) => {
+					console.log("Sign in successful");
+				})
+				.catch((error) => {
+					// Handle Errors here.
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					if (errorCode === 'auth/invalid-custom-token') {
+						alert('The token you provided is not valid.');
+					} else {
+						console.error(error);
+					}
+				});
 		});
 
 	}
@@ -624,9 +649,8 @@ rhit.main = function () {
 		rhit.checkForRedirects();
 		rhit.initializePage();
 	});
-	
+
 
 };
 
 rhit.main();
-
