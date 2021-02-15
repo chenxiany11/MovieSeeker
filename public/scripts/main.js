@@ -186,6 +186,7 @@ rhit.FbReviewsManager = class {
 		console.log("create review manager");
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_REVIEW);
+		console.log(this._ref);
 		this._unsubscribe = null;
 
 	}
@@ -208,7 +209,7 @@ rhit.FbReviewsManager = class {
 
 	beginListening(changeListener){
 		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot)=>{
-				console.log("review update");
+				console.log("review update",querySnapshot.docs);
 				this._documentSnapshots = querySnapshot.docs;
 				changeListener();
 		});
@@ -281,6 +282,7 @@ rhit.DetailPageController = class {
 		// });
 
 		rhit.fbSingleMovieManager.beginListening(this.updateView.bind(this));
+		rhit.fbReviewsManager.beginListening(this.updateList.bind(this))
 	}
 
 	updateList() {
@@ -324,6 +326,7 @@ rhit.DetailPageController = class {
 		// 	document.querySelector("#menuEdit").style.display = "flex";
 		// 	document.querySelector("#menuDelete").style.display = "flex";
 		// }
+		
 		const newList = htmlToElement('<div id="reviewContainer"><div>');
 		console.log(rhit.fbReviewsManager);
 		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
@@ -543,6 +546,7 @@ rhit.initializePage = function(){
 		}
 		rhit.fbSingleMovieManager = new rhit.FbSingleMovieManager(mqId);
 		rhit.fbReviewsManager = new rhit.FbReviewsManager();
+		// console.log(rhit.fbReviewsManager._ref.);
 		new rhit.DetailPageController();
 
 	}
