@@ -9,7 +9,7 @@ rhit.FB_KEY_RATING = "rating";
 rhit.FB_KEY_TYPE = "type";
 rhit.FB_KEY_MOVIE = "Movie";
 rhit.FB_KEY_REVIEW = "Review";
-
+rhit.FB_KEY_USERID = "UserID"
 rhit.fbMoviesManager = null;
 rhit.fbReviewsManager = null;
 rhit.fbSingleMovieManager = null;
@@ -143,12 +143,12 @@ rhit.ReviewsPageController = class {
 		document.querySelector("#menuShowMyReviews").addEventListener("click", (event)=>{
 			window.location.href=`/review.html?uid=${rhit.fbAuthManager.uid}`
 		});
-		
+		rhit.fbReviewsManager.beginListening(this.updateList.bind(this));
 	}
 	
 	updateList() {
 		const newList = htmlToElement('<div id="reviewListContainer"><div>');
-		for (let i = 0; i < rhit.fbReviewssManager.length; i++) {
+		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
 			const m = rhit.fbReviewsManager.getReviewAtIndex(i);
 			console.log(m.movie);
 			console.log(m.rating);
@@ -177,8 +177,8 @@ rhit.ReviewsPageController = class {
 	
 }
 rhit.FbReviewsManager = class {
-	constructor(){
-		// this._uid = uid;
+	constructor(uid){
+		this._uid = uid;
 		console.log("create review manager");
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_REVIEW);
@@ -191,6 +191,7 @@ rhit.FbReviewsManager = class {
 		this._ref.add({
 			[rhit.FB_KEY_MOVIE]: movie,
 			[rhit.FB_KEY_RATING]: rating,
+			[rhit.FB_KEY_USERID]: this._uid,
 			[rhit.FB_KEY_REVIEW]: 0,
 		}).then(function (docRef) {
 			console.log("Document written with ID: ", docRef.id);
@@ -220,15 +221,23 @@ rhit.FbReviewsManager = class {
 	getReviewAtIndex(index){
 		const docSnapshot = this._documentSnapshots[index];
 		const review = new rhit.Review(
-			docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_MOVIE),
 			docSnapshot.get(rhit.FB_KEY_RATING),
+			docSnapshot.get(rhit.FB_KEY_USERID),
 			docSnapshot.get(rhit.FB_KEY_REVIEW));
 
 		return review;
 	}
 }
 
+rhit.Review = class{
+	constructor(Movie, Rating, Userid, Review){
+		this.movie = Movie;
+		this.rating = Rating;
+		this.userid = Userid;
+		this.review = Review;
+	}
+}
 rhit.DetailPageController = class {
 	constructor() {
 		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
@@ -481,6 +490,10 @@ rhit.initializePage = function(){
 	}
 	if(document.querySelector("#reviewsPage")){
 		console.log("You are on reviews page");
+		const urlParams = new URLSearchParams(window.location.search)
+		const uid = urlParams.get('uid')
+		console.log(`uid is ${uid}`);
+		rhit.fbReviewsManager = new rhit.FbReviewsManager(uid);
 		new rhit.ReviewsPageController();
 	}
 	
