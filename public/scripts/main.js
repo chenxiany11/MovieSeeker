@@ -10,6 +10,8 @@ rhit.FB_KEY_TYPE = "type";
 rhit.FB_KEY_MOVIE = "Movie";
 rhit.FB_KEY_REVIEW = "Review";
 rhit.FB_KEY_USERID = "UserID"
+rhit.FB_KEY_COUNT = "count";
+rhit.FB_KEY_FAV = "fav"
 rhit.fbMoviesManager = null;
 rhit.fbReviewsManager = null;
 rhit.fbSingleMovieManager = null;
@@ -180,6 +182,63 @@ rhit.ReviewsPageController = class {
 	}
 
 }
+
+rhit.FavoritePageController = class{
+	constructor() {
+		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
+			console.log("Show all movies");
+			window.location.href = "/mainpage.html";
+
+		});
+		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
+			console.log("Show my favorites");
+			window.location.href = `/favoriteMovie.html?uid=${rhit.fbAuthManager.uid}`;
+
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		});
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
+			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
+			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
+		});
+	}
+
+	updateList() {
+		const newList = htmlToElement('<div id="movieListContainer"><div>');
+		for (let i = 0; i < rhit.fbMoviesManager.length; i++) {
+			const m = rhit.fbMoviesManager.getMovieAtIndex(i);
+			console.log(m.movie);
+			console.log(m.type);
+			const newCard = this._createCard(m);
+			newCard.onclick = (event) => {
+				// console.log(`You clicked on ${mq.id}`);
+				// rhit.storage.setMovieQuoteId(mq.id);
+				window.location.href = `/movie.html?id=${m.id}`;
+			};
+			newList.appendChild(newCard);
+		}
+		const oldList = document.querySelector("#movieListContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
+
+	_createCard(movie) {
+		return htmlToElement(`<div class="card">
+		<div class="card-body">
+		  <img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+		  <h5 class="card-title">${movie.name}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+		  <h6 class="card-subtitle mb-2 text-muted">${movie.rating}</h6>
+		</div>
+	  </div>`);
+	}
+}
+
+
 rhit.FbReviewsManager = class {
 	constructor() {
 		//this._uid = uid;
@@ -193,10 +252,12 @@ rhit.FbReviewsManager = class {
 	add(movie, rating, review) {
 		console.log("add review for movie" + `${movie}`);
 		console.log("rating is" + `${rating}` + "Review is: " + `${review}`);
+		rhit.fbSingleMovieManager.update(rating);
 		this._ref.add({
 				[rhit.FB_KEY_MOVIE]: movie,
 				[rhit.FB_KEY_RATING]: parseInt(rating),
 				[rhit.FB_KEY_USERID]: rhit.fbAuthManager.uid,
+				[rhit.FB_KEY_FAV]:[],
 				[rhit.FB_KEY_REVIEW]: review,
 			}).then(function (docRef) {
 				console.log("Document written with ID: ", docRef.id);
@@ -267,20 +328,6 @@ rhit.DetailPageController = class {
 			document.querySelector("#inputReview").value = "";
 			//document.querySelector("#inputReview").value = rhit.fbSingleMovieManager.review;
 		});
-		// $("#editQuoteDialog").on('shown.bs.modal', (event) => {
-		// 	document.querySelector("#inputQuote").focus();
-		// });
-
-		// document.querySelector("#submitDeleteQuote").addEventListener("click", (event) => {
-
-		// 	rhit.fbSingleQuotesManager.delete().then(function () {
-		// 		console.log("Document successfully deleted!");
-		// 		window.location.href = "/list.html"
-		// 	}).catch(function (error) {
-		// 		console.error("Error removing document: ", error);
-		// 	});;
-
-		// });
 
 		rhit.fbSingleMovieManager.beginListening(this.updateView.bind(this));
 		rhit.fbReviewsManager.beginListening(this.updateList.bind(this))
@@ -405,10 +452,11 @@ rhit.FbSingleMovieManager = class {
 		this._unsubscribe();
 	}
 
-	update(quote, movie) {
-		this._ref.update({
-				[rhit.FB_KEY_QUOTE]: quote,
-				[rhit.FB_KEY_MOVIE]: movie,
+	update(rating) {
+		console.log(this._ref.get().then((doc) =>{
+			this._ref.update({
+				[rhit.FB_KEY_COUNT]: doc.data().count+1,
+				[rhit.FB_KEY_RATING]: (doc.data().rating+rating)/(doc.data().count),
 				[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now(),
 			})
 			.then(() => {
@@ -417,6 +465,10 @@ rhit.FbSingleMovieManager = class {
 			.catch(function (error) {
 				console.error("Error adding document: ", error);
 			});
+			// const count = doc.data().count;
+			// return count;
+		}));
+		
 	}
 	delete() {
 		return this._ref.delete();
@@ -441,6 +493,8 @@ rhit.Movie = class {
 		this.moviePic = MoviePic;
 		this.name = Name;
 		this.rating = Rating;
+		// this.count = 0;
+		// this.fav = [];
 		this.type = Type;
 	}
 }
@@ -474,6 +528,8 @@ rhit.FbMoviesManager = class {
 				[rhit.FB_KEY_MOVIEPIC]: moviePic,
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_RATING]: 0,
+				// [rhit.FB_KEY_COUNT]:0,
+				// [rhit.FB_KEY_FAV]: [],
 				[rhit.FB_KEY_TYPE]: type
 			}).then(function (docRef) {
 				console.log("Document written with ID: ", docRef.id);
@@ -507,6 +563,8 @@ rhit.FbMoviesManager = class {
 			docSnapshot.get(rhit.FB_KEY_MOVIEPIC),
 			docSnapshot.get(rhit.FB_KEY_NAME),
 			docSnapshot.get(rhit.FB_KEY_RATING),
+			// docSnapshot.get(rhit.FB_KEY_COUNT),
+			// docSnapshot.get(rhit.FB_KEY_FAV),
 			docSnapshot.get(rhit.FB_KEY_TYPE));
 
 		return movie;
