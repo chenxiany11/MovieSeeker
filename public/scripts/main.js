@@ -316,6 +316,25 @@ rhit.DetailPageController = class {
 			console.log("Sign out");
 
 		});
+		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
+			console.log("Show all movies");
+			window.location.href = "/mainpage.html";
+
+		});
+		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
+			console.log("Show my favorites");
+			window.location.href = `/favoriteMovie.html?uid=${rhit.fbAuthManager.uid}`;
+
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		});
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
+			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
+			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
+		});
 		document.querySelector("#submitAddReview").addEventListener("click", (event) => {
 			console.log("add review button clicked");
 			const review = document.querySelector("#inputReview").value;
@@ -645,7 +664,27 @@ rhit.ProfilePageController = class {
 		console.log(urlParams.get('uid'));
 		document.querySelector("#name").innerHTML = urlParams.get('uid');
 		document.querySelector("#userName").innerHTML = urlParams.get('uid') + "@rose-hulman.edu"
+		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
+			console.log("Show all movies");
+			window.location.href = "/mainpage.html";
+
+		});
+		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
+			console.log("Show my favorites");
+			window.location.href = `/favoriteMovie.html?uid=${rhit.fbAuthManager.uid}`;
+
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		});
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
+			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
+			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
+		});
 	}
+	
 }
 rhit.initializePage = function () {
 	if (document.querySelector("#mainPage")) {
