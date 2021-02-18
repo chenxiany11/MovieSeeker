@@ -379,7 +379,7 @@ rhit.DetailPageController = class {
 			}
 			if (m.userid == rhit.fbAuthManager.uid) {
 				console.log("find xxxx");
-				document.getElementById("addReviewButton").disabled = true;
+				// document.getElementById("addReviewButton").disabled = true;
 			}
 
 		}
@@ -514,6 +514,7 @@ rhit.FbSingleMovieManager = class {
 		console.log(this._ref.FB_KEY_FAV);
 
 		console.log(this._ref.get().then((doc) => {
+			console.log(doc.data().fav);
 			for (const uid of doc.data().fav) {
 				if (id == uid) {
 					console.log(id);
@@ -521,7 +522,9 @@ rhit.FbSingleMovieManager = class {
 					console.log("you've already added to fav")
 					return;
 				}
-				console.log(doc.data().fav);
+				
+			}
+			console.log(doc.data().fav);
 				const list = doc.data().fav;
 				list.push(id);
 				this._ref.update({
@@ -533,8 +536,8 @@ rhit.FbSingleMovieManager = class {
 					.catch(function (error) {
 						console.error("Error adding document: ", error);
 					});
-			}
 		}));
+		
 		console.log("end");
 	}
 	delete() {
