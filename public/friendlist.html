@@ -20,7 +20,12 @@
             <span class="sr-only">Toggle drawer</span>
             <i class="material-icons">menu</i>
           </button>
-          <a class="navbar-brand" href="#">&nbsp;&nbsp;Movie Seeker</a>
+          <a class="navbar-brand" href="#">&nbsp;&nbsp;My Friends</a>
+        </div>
+        <div class="bmd-form-group bmd-collapse-inline justify-content-end">
+          <button id="searchButton" class="btn bmd-btn-icon" for="search" data-toggle="modal" data-target="#searchUserDialog">
+            <i class="material-icons">search</i>
+          </button>  
         </div>
         </div>
         
@@ -39,14 +44,31 @@
       </div>
         <!-- <a class="navbar-brand" href="#">Movie Seeker</a> --> 
         <main class="bmd-layout-content">
-        <div id="favPage" class="container page-container">
-        <div id="favListContainer"></div>
-        </div></main>
+        <div id="friendListPage" class="container page-container">
+        <div id="friendListContainer"></div>
+        </main>
     </div>
     </div>
-   
-
-
+    <div class="modal fade" id="searchUserDialog" tabindex="-1" role="dialog" aria-labelledby="Search Movie" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" >Search User</h5>
+          </div>
+          <div class="modal-body">
+              <div class="form-group bmd-form-group"> 
+                <label for="inputSearchUser">Movie</label>
+                <input type="text" class="form-control" id="inputSearchUser" placeholder="">
+                <span class="bmd-help">What is the name of User?</span>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+            <button id="submitUserSearch" type="button" class="btn btn-primary" data-dismiss="modal">SEARCH</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="scripts/jquery.min.js"></script>
     <script src="scripts/popper.js"></script>
     <script src="scripts/bootstrap-material-design.js"></script>

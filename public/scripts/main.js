@@ -43,10 +43,10 @@ rhit.MainPageController = class {
 			rhit.fbAuthManager.signOut();
 		});
 		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
-			
+
 			console.log("profile");
 			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
-			
+
 		});
 		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
 			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
@@ -59,17 +59,21 @@ rhit.MainPageController = class {
 			// $('#addQuoteDialog').modal('hide')
 
 		});
-		$("#addMovieDialog").on('show.bs.modal', (event) => {
-			// Pre animation
-			document.querySelector("#inputMoviePic").value = "";
-			document.querySelector("#inputMovie").value = "";
-			document.querySelector('#inputType').value = "";
-		});
-		$("#addMovieDialog").on('shown.bs.modal', (event) => {
-			document.querySelector("#inputMoviePic").focus();
-		});
+		console.log(rhit.fbAuthManager.uid);
+		if (rhit.fbAuthManager.uid != "linj3"){
+			document.querySelector("#fab").remove();
+		}
 
-
+			console.log("xxxx");
+			$("#addMovieDialog").on('show.bs.modal', (event) => {
+				// Pre animation
+				document.querySelector("#inputMoviePic").value = "";
+				document.querySelector("#inputMovie").value = "";
+				document.querySelector('#inputType').value = "";
+			});
+			$("#addMovieDialog").on('shown.bs.modal', (event) => {
+				document.querySelector("#inputMoviePic").focus();
+			});
 		document.querySelector("#submitSearch").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputSearchMovie").value;
 			const i = rhit.fbMoviesManager.search(name);
@@ -115,14 +119,71 @@ rhit.MainPageController = class {
 	}
 
 	_createCard(movie) {
-		return htmlToElement(`<div class="card">
-		<div class="card-body">
+		if (Math.floor(movie.rating) == 1) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
 		  <img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
 		  <h5 class="card-title">${movie.name}</h5>
 		  <h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
-		  <h6 class="card-subtitle mb-2 text-muted">${movie.rating}</h6>
-		</div>
-	  </div>`);
+		  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`);
+		} else if (Math.floor(movie.rating) == 2) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+		  <h5 class="card-title">${movie.name}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		} else if (Math.floor(movie.rating) == 3) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+			<h5 class="card-title">${movie.name}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		} else if (Math.floor(movie.rating) == 4) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+		  <h5 class="card-title">${movie.name}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		}
+		return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+			<h5 class="card-title">${movie.name}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
 	}
 
 
@@ -173,13 +234,67 @@ rhit.ReviewsPageController = class {
 	}
 
 	_createCard(review) {
+		if (Math.floor(review.rating) == 1) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<h5 class="card-title">${review.movie}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+		  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`);
+		} else if (Math.floor(review.rating) == 2) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<h5 class="card-title">${review.movie}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		} else if (Math.floor(review.rating) == 3) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<h5 class="card-title">${review.movie}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		} else if (Math.floor(review.rating) == 4) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<h5 class="card-title">${review.movie}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		}
 		return htmlToElement(`<div class="card">
-		<div class="card-body">
-		  <h5 class="card-title">${review.movie}</h5>
-		  <h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
-		  <h6 class="card-subtitle mb-2 text-muted">${review.rating}</h6>
-		</div>
-	  </div>`);
+			<div class="card-body">
+			<h5 class="card-title">${review.movie}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${review.review}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+	
 	}
 
 }
@@ -233,14 +348,71 @@ rhit.FavoritePageController = class {
 	}
 
 	_createCard(movie) {
-		return htmlToElement(`<div class="card">
-		<div class="card-body">
+		if (Math.floor(movie.rating) == 1) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
 		  <img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
 		  <h5 class="card-title">${movie.name}</h5>
 		  <h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
-		  <h6 class="card-subtitle mb-2 text-muted">${movie.rating}</h6>
-		</div>
-	  </div>`);
+		  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`);
+		} else if (Math.floor(movie.rating) == 2) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+		  <h5 class="card-title">${movie.name}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		} else if (Math.floor(movie.rating) == 3) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+			<h5 class="card-title">${movie.name}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		} else if (Math.floor(movie.rating) == 4) {
+			return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+		  <h5 class="card-title">${movie.name}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
+		}
+		return htmlToElement(`<div class="card">
+			<div class="card-body">
+			<img src="${movie.moviePic} alt="${movie.name}" width="100" height="150">
+			<h5 class="card-title">${movie.name}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">${movie.type}</h6>
+			  <p>
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+			<img src="https://s3-us-west-2.amazonaws.com/static-resources.zybooks.com/star.png" alt="star">
+		  </p>
+			</div>
+		  </div>`)
 	}
 }
 
@@ -360,11 +532,11 @@ rhit.DetailPageController = class {
 			document.querySelector("#inputReview").value = "";
 			//document.querySelector("#inputReview").value = rhit.fbSingleMovieManager.review;
 		});
-		rhit.fbUserManager.beginListening();
+		rhit.fbUserManager.beginListening(this.updateList.bind(this));
 		rhit.fbSingleMovieManager.beginListening(this.updateView.bind(this));
 		rhit.fbReviewsManager.beginListening(this.updateList.bind(this))
 	}
-
+	
 	updateList() {
 		const newList = htmlToElement('<div id="reviewContainer"><div>');
 		for (let i = 0; i < rhit.fbReviewsManager.length; i++) {
@@ -522,22 +694,22 @@ rhit.FbSingleMovieManager = class {
 					console.log("you've already added to fav")
 					return;
 				}
-				
+
 			}
 			console.log(doc.data().fav);
-				const list = doc.data().fav;
-				list.push(id);
-				this._ref.update({
-						[rhit.FB_KEY_FAV]: list,
-					})
-					.then(() => {
-						console.log("Document updated");
-					})
-					.catch(function (error) {
-						console.error("Error adding document: ", error);
-					});
+			const list = doc.data().fav;
+			list.push(id);
+			this._ref.update({
+					[rhit.FB_KEY_FAV]: list,
+				})
+				.then(() => {
+					console.log("Document updated");
+				})
+				.catch(function (error) {
+					console.error("Error adding document: ", error);
+				});
 		}));
-		
+
 		console.log("end");
 	}
 	delete() {
@@ -647,11 +819,85 @@ rhit.FbMoviesManager = class {
 }
 rhit.UserController = class {
 	constructor() {
-		
-		rhit.fbUserManager.beginListening();
+
+		//rhit.fbUserManager.beginListening();
 	}
 }
+rhit.FriendListConroller = class {
+	constructor() {
+		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
+			console.log("Show all movies");
+			window.location.href = "/mainpage.html";
 
+		});
+		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
+			console.log("Show my favorites");
+			window.location.href = `/favoriteMovie.html?uid=${rhit.fbAuthManager.uid}`;
+
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		});
+		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
+			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
+			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
+		});
+		document.querySelector("#submitUserSearch").addEventListener("click", (event) => {
+			const name = document.querySelector("#inputSearchUser").value;
+			const i = rhit.fbUserManager.search(name);
+			rhit.fbUserManager.beginListening(this.searchUser.bind(this, i));
+		});
+		console.log("begin");
+		console.log(rhit.fbUserManager.length);
+		rhit.fbUserManager.beginListening(this.updateList.bind(this));
+		console.log("end");
+	}
+	searchUser(i) {
+		const newList = htmlToElement('<div id="friendListContainer"><div>');
+		const m = rhit.fbUserManager.getUserAtIndex(i);
+		console.log(m.movie);
+		console.log(m.type);
+		const newCard = this._createCard(m);
+		newList.appendChild(newCard);
+		const oldList = document.querySelector("#friendListContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
+	updateList() {
+		console.log(rhit.fbUserManager.length);
+		const newList = htmlToElement('<div id="friendListContainer"><div>');
+		for (let i = 0; i < rhit.fbUserManager.length; i++) {
+			const m = rhit.fbUserManager.getUserAtIndex(i);
+			console.log("user");
+
+			console.log(m);
+			const newCard = this._createCard(m);
+			newCard.onclick = (event) => {
+
+				window.location.href = `/movie.html?id=${m.id}`;
+			};
+			newList.appendChild(newCard);
+
+		}
+		const oldList = document.querySelector("#friendListContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
+
+	_createCard(user) {
+		console.log("create card");
+		return htmlToElement(`<div class="card">
+		<div class="card-body">
+		  <h5 class="card-title">${user.id}</h5>
+		  <h6 class="card-subtitle mb-2 text-muted">${user.fav}</h6>
+		</div>
+	  </div>`);
+	}
+}
 rhit.FbUserManager = class {
 	constructor() {
 		// this._uid = uid;
@@ -676,61 +922,55 @@ rhit.FbUserManager = class {
 
 	}
 	updateFav(name) {
-		// console.log("start");
-		// console.log(name);
-		// console.log(rhit.fbUserManager._documentSnapshots.length);
-		// console.log(rhit.fbUserManager._documentSnapshots[1].get(rhit.FB_KEY_ID));
 		const size = rhit.fbUserManager._documentSnapshots.length;
 		for (var i = 0; i < size; i++) {
 			const docSnapshot = this._documentSnapshots[i];
-			if(docSnapshot.get(rhit.FB_KEY_ID) == rhit.fbAuthManager.uid){
+			if (docSnapshot.get(rhit.FB_KEY_ID) == rhit.fbAuthManager.uid) {
 				console.log(docSnapshot.get(rhit.FB_KEY_ID));
 				console.log(docSnapshot.get(rhit.FB_KEY_USERFAV));
-			for(const mn of docSnapshot.get(rhit.FB_KEY_USERFAV)){
-			if (name == mn) {
-				console.log(mn);
-				console.log("you've already added to fav")
-				return;
-			}
-			}
-			var list = docSnapshot.get(rhit.FB_KEY_USERFAV);
-			list.push(name);
-			console.log(list);
-			console.log(docSnapshot.id);
-			// docSnapshot.data().favorite = list;
-			rhit.fbUserManager._ref.doc(docSnapshot.id).update({
-				[rhit.FB_KEY_USERFAV]: list
-			});
-			// docSnapshot.set({
-				
-			// })
-			// console.log(docSnapshot.data().favorite);
-			// docSnapshot.rhit.FB_KEY_USERFAV = list;
-			// docSnapshot.update({
-			// 			[rhit.FB_KEY_USERFAV]: list,
-			// 		})
-			// 		.then(() => {
-			// 			console.log("Document updated");
-			// 		})
-			// 		.catch(function (error) {
-			// 			console.error("Error adding document: ", error);
-			// 		});
+				for (const mn of docSnapshot.get(rhit.FB_KEY_USERFAV)) {
+					if (name == mn) {
+						console.log(mn);
+						console.log("you've already added to fav")
+						return;
+					}
+				}
+				var list = docSnapshot.get(rhit.FB_KEY_USERFAV);
+				list.push(name);
+				console.log(list);
+				console.log(docSnapshot.id);
+				rhit.fbUserManager._ref.doc(docSnapshot.id).update({
+					[rhit.FB_KEY_USERFAV]: list
+				});
 			}
 		}
 		console.log("end");
-		}
-		
-		
-	
-	beginListening() {
-	this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
-			console.log("User update1");
-			this._documentSnapshots = querySnapshot.docs;
-			
-			console.log(this._documentSnapshots.length);
-			this.add(rhit.fbAuthManager.uid,[]);
-	});
 	}
+
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
+			// console.log("Movie update");
+			console.log(this._documentSnapshots.length);
+			this._documentSnapshots = querySnapshot.docs;
+			this.add(rhit.fbAuthManager.uid, []);
+			changeListener();
+		});
+	}
+
+	stopListening() {
+		this._unsubscribe();
+	}
+
+
+	// beginListening() {
+	// 	this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
+	// 		console.log("User update1");
+	// 		this._documentSnapshots = querySnapshot.docs;
+
+	// 		//console.log(this._documentSnapshots.length);
+	// 		this.add(rhit.fbAuthManager.uid, []);
+	// 	});
+	// }
 
 	add(id, favMovie) {
 		console.log("add");
@@ -741,13 +981,13 @@ rhit.FbUserManager = class {
 			const docSnapshot = this._documentSnapshots[i];
 			console.log(docSnapshot.get(rhit.FB_KEY_ID));
 			console.log(id);
-			if(docSnapshot.get(rhit.FB_KEY_ID) == id){
+			if (docSnapshot.get(rhit.FB_KEY_ID) == id) {
 				return;
 			}
 		}
 		this._ref.add({
-			[rhit.FB_KEY_ID]:id,
-			[rhit.FB_KEY_USERFAV]:favMovie
+			[rhit.FB_KEY_ID]: id,
+			[rhit.FB_KEY_USERFAV]: favMovie
 		})
 		//changeListener();
 	}
@@ -764,7 +1004,7 @@ rhit.FbUserManager = class {
 	getUserAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
 		const user = new rhit.User(
-
+			docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_ID),
 			docSnapshot.get(rhit.FB_KEY_USERFAV),
 		);
@@ -773,7 +1013,8 @@ rhit.FbUserManager = class {
 }
 
 rhit.User = class {
-	constructor(id, fav) {
+	constructor(idd, id, fav) {
+		this.idd = idd;
 		this.id = id;
 		this.fav = fav;
 	}
@@ -794,7 +1035,7 @@ rhit.checkForRedirects = function () {
 	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
 		// rhit.fbUserManager = new FbUserManager()
 		// rhit.fbMoviesManager = new FbMoviesManager();
-		rhit.fbUserManager.add(rhit.fbAuthManager.uid,[]);
+		rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
 		window.location.href = "/mainpage.html";
 	}
 
@@ -828,6 +1069,9 @@ rhit.ProfilePageController = class {
 		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
 			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
 		});
+		document.querySelector("#viewFriend").addEventListener("click", (event) => {
+			window.location.href = `/friendlist.html?uid=${rhit.fbAuthManager.uid}`
+		});
 	}
 
 }
@@ -840,11 +1084,11 @@ rhit.initializePage = function () {
 		// console.log(`uid is ${uid}`);
 		rhit.fbMoviesManager = new rhit.FbMoviesManager();
 		// rhit.fbReviewsManager = new rhit.FbReviewsManager();
-		
+
 		//rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
 		// new rhit.UserController();
-		
-		
+
+
 		new rhit.MainPageController();
 	}
 
@@ -878,6 +1122,11 @@ rhit.initializePage = function () {
 		console.log("You are on fav page");
 		rhit.fbMoviesManager = new rhit.FbMoviesManager();
 		new rhit.FavoritePageController();
+	}
+	if (document.querySelector("#friendListPage")) {
+		console.log("You are on friend List Page");
+		rhit.fbUserManager = new rhit.FbUserManager();
+		new rhit.FriendListConroller();
 	}
 	if (document.querySelector("#profilePage")) {
 		console.log("You are on profile page");
@@ -950,13 +1199,17 @@ rhit.main = function () {
 		// console.log("auth change call fired. TODO: check for redirect and init the page");
 		// console.log("isSigedin = ", rhit.fbAuthManager.isSignedIn);
 		rhit.fbUserManager = new rhit.FbUserManager();
-		rhit.fbUserManager.beginListening();
+		rhit.fbUserManager.beginListening(()=> {
+			console.log("ready");
+		});
 		console.log(rhit.fbUserManager._documentSnapshots[0]);
 		// console.log(rhit.fbAuthManager.uid);
 		// rhit.fbUserManager.beginListening();
 		//rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
 		rhit.checkForRedirects();
 		rhit.initializePage();
+
+
 	});
 
 };
