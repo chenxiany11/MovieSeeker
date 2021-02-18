@@ -28,7 +28,6 @@ function htmlToElement(html) {
 
 rhit.MainPageController = class {
 	constructor() {
-		//rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
 		// let promise = fetch('https://www.omdbapi.com/?apikey=691ddc11&t=the+lego+movie').then( response => response.json()) .then(data => console.log(data));
 		document.querySelector("#menuShowAllMovies").addEventListener("click", (event) => {
 			console.log("Show all movies");
@@ -44,7 +43,10 @@ rhit.MainPageController = class {
 			rhit.fbAuthManager.signOut();
 		});
 		document.querySelector("#menuShowMyProfile").addEventListener("click", (event) => {
+			
+			console.log("profile");
 			window.location.href = `/profile.html?uid=${rhit.fbAuthManager.uid}`
+			
 		});
 		document.querySelector("#menuShowMyReviews").addEventListener("click", (event) => {
 			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
@@ -74,7 +76,6 @@ rhit.MainPageController = class {
 			rhit.fbMoviesManager.beginListening(this.searchMovie.bind(this, i));
 		});
 		rhit.fbMoviesManager.beginListening(this.updateList.bind(this));
-		
 	}
 	searchMovie(i) {
 		const newList = htmlToElement('<div id="movieListContainer"><div>');
@@ -97,8 +98,8 @@ rhit.MainPageController = class {
 		const newList = htmlToElement('<div id="movieListContainer"><div>');
 		for (let i = 0; i < rhit.fbMoviesManager.length; i++) {
 			const m = rhit.fbMoviesManager.getMovieAtIndex(i);
-			console.log(m.movie);
-			console.log(m.type);
+			// console.log(m.movie);
+			// console.log(m.type);
 			const newCard = this._createCard(m);
 			newCard.onclick = (event) => {
 				// console.log(`You clicked on ${mq.id}`);
@@ -321,7 +322,6 @@ rhit.DetailPageController = class {
 			window.location.href = "/mainpage.html";
 
 		});
-		//rhit.fbUserManager.beginListening();
 		document.querySelector("#menuShowMyMovies").addEventListener("click", (event) => {
 			console.log("Show my favorites");
 			window.location.href = `/favoriteMovie.html?uid=${rhit.fbAuthManager.uid}`;
@@ -351,8 +351,8 @@ rhit.DetailPageController = class {
 			console.log("add fav button clicked");
 
 			rhit.fbSingleMovieManager.updateFav(rhit.fbAuthManager.uid);
-			console.log(rhit.fbSingleMovieManager.Name);
-			rhit.fbUserManager.updateFav(rhit.fbSingleMovieManager.Name);
+			// console.log(rhit.fbSingleMovieManager.Name);
+			rhit.fbUserManager.updateFav(rhit.fbSingleMovieManager.movieName);
 		});
 		$("#reviewDialog").on('show.bs.modal', (event) => {
 			// Pre animation
@@ -360,7 +360,7 @@ rhit.DetailPageController = class {
 			document.querySelector("#inputReview").value = "";
 			//document.querySelector("#inputReview").value = rhit.fbSingleMovieManager.review;
 		});
-
+		rhit.fbUserManager.beginListening();
 		rhit.fbSingleMovieManager.beginListening(this.updateView.bind(this));
 		rhit.fbReviewsManager.beginListening(this.updateList.bind(this))
 	}
@@ -573,7 +573,7 @@ rhit.Movie = class {
 rhit.FbMoviesManager = class {
 	constructor() {
 		// this._uid = uid;
-		console.log("create movie manager");
+		// console.log("create movie manager");
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_MOVIE);
 		this._unsubscribe = null;
@@ -614,7 +614,7 @@ rhit.FbMoviesManager = class {
 
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
-			console.log("Movie update");
+			// console.log("Movie update");
 			this._documentSnapshots = querySnapshot.docs;
 			changeListener();
 		});
@@ -652,10 +652,9 @@ rhit.UserController = class {
 rhit.FbUserManager = class {
 	constructor() {
 		// this._uid = uid;
-		console.log("create user manager");
-		this._documentSnapshots = {};
+		// console.log("create user manager");
+		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USER);
-		console.log("!!!!!!");
 		console.log(this._ref);
 		this._unsubscribe = null;
 
@@ -674,62 +673,79 @@ rhit.FbUserManager = class {
 
 	}
 	updateFav(name) {
-		console.log("start");
-		console.log(this._documentSnapshot);
-
-		console.log(this._ref.get().then((doc) => {
-			console.log(doc.data());
-			for (const mn of doc.data().favorite) {
-				if (name == mn) {
-					console.log(mn);
-					console.log("you've already added to fav")
-					return;
-				}
-				console.log(doc.data().favorite);
-				const list = doc.data().favorite;
-				list.push(name);
-				this._ref.update({
-						[rhit.FB_KEY_USERFAV]: list,
-					})
-					.then(() => {
-						console.log("Document updated");
-					})
-					.catch(function (error) {
-						console.error("Error adding document: ", error);
-					});
+		// console.log("start");
+		// console.log(name);
+		// console.log(rhit.fbUserManager._documentSnapshots.length);
+		// console.log(rhit.fbUserManager._documentSnapshots[1].get(rhit.FB_KEY_ID));
+		const size = rhit.fbUserManager._documentSnapshots.length;
+		for (var i = 0; i < size; i++) {
+			const docSnapshot = this._documentSnapshots[i];
+			if(docSnapshot.get(rhit.FB_KEY_ID) == rhit.fbAuthManager.uid){
+				console.log(docSnapshot.get(rhit.FB_KEY_ID));
+				console.log(docSnapshot.get(rhit.FB_KEY_USERFAV));
+			for(const mn of docSnapshot.get(rhit.FB_KEY_USERFAV)){
+			if (name == mn) {
+				console.log(mn);
+				console.log("you've already added to fav")
+				return;
 			}
-		}));
+			}
+			var list = docSnapshot.get(rhit.FB_KEY_USERFAV);
+			list.push(name);
+			console.log(list);
+			console.log(docSnapshot.id);
+			// docSnapshot.data().favorite = list;
+			rhit.fbUserManager._ref.doc(docSnapshot.id).update({
+				[rhit.FB_KEY_USERFAV]: list
+			});
+			// docSnapshot.set({
+				
+			// })
+			// console.log(docSnapshot.data().favorite);
+			// docSnapshot.rhit.FB_KEY_USERFAV = list;
+			// docSnapshot.update({
+			// 			[rhit.FB_KEY_USERFAV]: list,
+			// 		})
+			// 		.then(() => {
+			// 			console.log("Document updated");
+			// 		})
+			// 		.catch(function (error) {
+			// 			console.error("Error adding document: ", error);
+			// 		});
+			}
+		}
 		console.log("end");
-	}
+		}
+		
+		
+	
 	beginListening() {
 	this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
 			console.log("User update1");
 			this._documentSnapshots = querySnapshot.docs;
+			
 			console.log(this._documentSnapshots.length);
+			this.add(rhit.fbAuthManager.uid,[]);
 	});
 	}
+
 	add(id, favMovie) {
-		// this._ref.get().then((doc)=>{
-		// 	console.log(doc.data());
-		// });
-		// console.log("add user " + `${id}`);
-		// console.log("favMovie are " + `${favMovie}`);
-		// console.log(this._documentSnapshots);
-		// for (var i = 0; i < this.length; i++) {
-		// 	if (id == this.getUserAtIndex(i).id) {
-		// 		console.log("user already exists");
-		// 		return;
-		// 	}
-		// }
+		console.log("add");
+		const size = this._documentSnapshots.length;
+		console.log(size);
+
+		for (var i = 0; i < size; i++) {
+			const docSnapshot = this._documentSnapshots[i];
+			console.log(docSnapshot.get(rhit.FB_KEY_ID));
+			console.log(id);
+			if(docSnapshot.get(rhit.FB_KEY_ID) == id){
+				return;
+			}
+		}
 		this._ref.add({
-				[rhit.FB_KEY_ID]: id,
-				[rhit.FB_KEY_USERFAV]: favMovie,
-			}).then(function (docRef) {
-				console.log("Document written with ID: ", docRef.id);
-			})
-			.catch(function (error) {
-				console.error("Error adding document: ", error);
-			});
+			[rhit.FB_KEY_ID]:id,
+			[rhit.FB_KEY_USERFAV]:favMovie
+		})
 		//changeListener();
 	}
 
@@ -773,6 +789,9 @@ rhit.LoginPageController = class {
 
 rhit.checkForRedirects = function () {
 	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
+		// rhit.fbUserManager = new FbUserManager()
+		// rhit.fbMoviesManager = new FbMoviesManager();
+		rhit.fbUserManager.add(rhit.fbAuthManager.uid,[]);
 		window.location.href = "/mainpage.html";
 	}
 
@@ -811,17 +830,18 @@ rhit.ProfilePageController = class {
 }
 rhit.initializePage = function () {
 	if (document.querySelector("#mainPage")) {
-		console.log("You are on the main page.");
+		console.log(rhit.fbAuthManager.uid);
+		// console.log("You are on the main page.");
 		const urlParams = new URLSearchParams(window.location.search)
 		const uid = urlParams.get('uid')
-		console.log(`uid is ${uid}`);
+		// console.log(`uid is ${uid}`);
 		rhit.fbMoviesManager = new rhit.FbMoviesManager();
 		// rhit.fbReviewsManager = new rhit.FbReviewsManager();
-		 rhit.fbUserManager = new rhit.FbUserManager();
 		
 		//rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
-		new rhit.UserController();
-		//rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
+		// new rhit.UserController();
+		
+		
 		new rhit.MainPageController();
 	}
 
@@ -921,13 +941,15 @@ rhit.FbAuthManager = class {
 }
 
 rhit.main = function () {
-	console.log("Ready");
+	// console.log("Ready");
 	rhit.fbAuthManager = new rhit.FbAuthManager();
 	rhit.fbAuthManager.beginListening(() => {
-		console.log("auth change call fired. TODO: check for redirect and init the page");
-		console.log("isSigedin = ", rhit.fbAuthManager.isSignedIn);
-		//rhit.fbUserManager = new rhit.FbUserManager();
-		console.log(rhit.fbAuthManager.uid);
+		// console.log("auth change call fired. TODO: check for redirect and init the page");
+		// console.log("isSigedin = ", rhit.fbAuthManager.isSignedIn);
+		rhit.fbUserManager = new rhit.FbUserManager();
+		rhit.fbUserManager.beginListening();
+		console.log(rhit.fbUserManager._documentSnapshots[0]);
+		// console.log(rhit.fbAuthManager.uid);
 		// rhit.fbUserManager.beginListening();
 		//rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
 		rhit.checkForRedirects();
