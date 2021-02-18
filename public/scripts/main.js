@@ -12,6 +12,8 @@ rhit.FB_KEY_REVIEW = "Review";
 rhit.FB_KEY_USERID = "UserID"
 rhit.FB_KEY_COUNT = "count";
 rhit.FB_KEY_FAV = "fav"
+rhit.FB_KEY_ID = "ID";
+rhit.FB_KEY_USERFAV = "favorite";
 rhit.fbMoviesManager = null;
 rhit.fbReviewsManager = null;
 rhit.fbSingleMovieManager = null;
@@ -160,10 +162,6 @@ rhit.ReviewsPageController = class {
 				const newCard = this._createCard(m);
 				newList.appendChild(newCard);
 			}
-			// newCard.onclick = (event) => {
-			// 	window.location.href = `/movie.html?id=${m.id}`;
-			// };
-
 		}
 		const oldList = document.querySelector("#reviewListContainer");
 		oldList.removeAttribute("id");
@@ -378,7 +376,7 @@ rhit.DetailPageController = class {
 				console.log("find xxxx");
 				document.getElementById("addReviewButton").disabled = true;
 			}
-			
+
 		}
 		for (const idd of rhit.fbSingleMovieManager.fav) {
 			if (rhit.fbAuthManager.uid == idd) {
@@ -536,7 +534,7 @@ rhit.FbSingleMovieManager = class {
 	delete() {
 		return this._ref.delete();
 	}
-	
+
 	get moviePic() {
 		return this._documentSnapshot.get(rhit.FB_KEY_MOVIEPIC);
 	}
@@ -595,8 +593,8 @@ rhit.FbMoviesManager = class {
 				[rhit.FB_KEY_MOVIEPIC]: moviePic,
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_RATING]: 0,
-				 [rhit.FB_KEY_COUNT]:0,
-				 [rhit.FB_KEY_FAV]: [],
+				[rhit.FB_KEY_COUNT]: 0,
+				[rhit.FB_KEY_FAV]: [],
 				[rhit.FB_KEY_TYPE]: type
 			}).then(function (docRef) {
 				console.log("Document written with ID: ", docRef.id);
@@ -638,11 +636,88 @@ rhit.FbMoviesManager = class {
 	}
 }
 
+rhit.FbUserManager = class {
+	constructor() {
+		// this._uid = uid;
+		console.log("create user manager");
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USER);
+		this._unsubscribe = null;
+
+	}
+	search(id) {
+		console.log("search user by name: " + `${id}`);
+		const size = this._documentSnapshots.length;
+		for (var i = 0; i < size; i++) {
+			const docSnapshot = this._documentSnapshots[i];
+			if (id == docSnapshot.get(rhit.FB_KEY_ID)) {
+				console.log(`${id}` + " User Found");
+				return i;
+			}
+		}
+		console.log("no user found");
+
+	}
+	add(id, favMovie) {
+		console.log("add user" + `${id}`);
+		console.log("favMovie are" + `${favMovie}`);
+		for (var i = 0; i < this.length; i++) {
+			if (id == this.getUserAtIndex(i).id) {
+				console.log("user already exists");
+				return;
+			}
+		}
+		this._ref.add({
+				[rhit.FB_KEY_ID]: id,
+				[rhit.FB_KEY_USERFAV]: favMovie,
+			}).then(function (docRef) {
+				console.log("Document written with ID: ", docRef.id);
+			})
+			.catch(function (error) {
+				console.error("Error adding document: ", error);
+			});
+
+	}
+
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.limit(50).onSnapshot((querySnapshot) => {
+			console.log("User update");
+			this._documentSnapshots = querySnapshot.docs;
+			changeListener();
+		});
+	}
+
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	get length() {
+		return this._documentSnapshots.length;
+	}
+	getUserAtIndex(index) {
+		const docSnapshot = this._documentSnapshots[index];
+		const user = new rhit.User(
+
+			docSnapshot.get(rhit.FB_KEY_ID),
+			docSnapshot.get(rhit.FB_KEY_USERFAV),
+		);
+		return user;
+	}
+}
+
+rhit.User = class {
+	constructor(id, fav) {
+		this.id = id;
+		this.fav = fav;
+	}
+}
 
 rhit.LoginPageController = class {
 	constructor() {
 		document.querySelector("#rosefireButton").onclick = (event) => {
+
 			rhit.fbAuthManager.signIn();
+
 		}
 	}
 
@@ -684,7 +759,7 @@ rhit.ProfilePageController = class {
 			window.location.href = `/review.html?uid=${rhit.fbAuthManager.uid}`
 		});
 	}
-	
+
 }
 rhit.initializePage = function () {
 	if (document.querySelector("#mainPage")) {
@@ -700,6 +775,7 @@ rhit.initializePage = function () {
 
 	if (document.querySelector("#loginPage")) {
 		console.log("You are on the login page.");
+		rhit.fbUserManager = new rhit.FbUserManager();
 		new rhit.LoginPageController();
 	}
 
@@ -717,7 +793,7 @@ rhit.initializePage = function () {
 			console.log("Error! Missing movie quote id!");
 			window.location.href = "/";
 		}
-		
+
 		rhit.fbSingleMovieManager = new rhit.FbSingleMovieManager(mqId);
 		rhit.fbReviewsManager = new rhit.FbReviewsManager();
 		new rhit.DetailPageController();
@@ -765,6 +841,7 @@ rhit.FbAuthManager = class {
 			console.log("Rosefire success!", rfUser);
 
 			firebase.auth().signInWithCustomToken(rfUser.token).then((user) => {
+					//
 					console.log("Sign in successful");
 				})
 				.catch((error) => {
@@ -797,10 +874,13 @@ rhit.main = function () {
 	rhit.fbAuthManager.beginListening(() => {
 		console.log("auth change call fired. TODO: check for redirect and init the page");
 		console.log("isSigedin = ", rhit.fbAuthManager.isSignedIn);
+		rhit.fbUserManager = new rhit.FbUserManager();
+		console.log(rhit.fbAuthManager.uid);
+		rhit.fbUserManager.add(rhit.fbAuthManager.uid, []);
 		rhit.checkForRedirects();
 		rhit.initializePage();
-	});
 
+	});
 
 };
 
