@@ -667,7 +667,7 @@ rhit.FbSingleMovieManager = class {
 		console.log(this._ref.get().then((doc) => {
 			this._ref.update({
 					[rhit.FB_KEY_COUNT]: doc.data().count + 1,
-					[rhit.FB_KEY_RATING]: (parseInt(doc.data().rating) + parseInt(rating)) / (doc.data().count + 1),
+					[rhit.FB_KEY_RATING]: (parseInt(doc.data().rating)*doc.data().count + parseInt(rating)) / (doc.data().count + 1),
 					[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now(),
 				})
 				.then(() => {
