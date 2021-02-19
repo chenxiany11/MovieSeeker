@@ -130,8 +130,8 @@ body {
 }
 
 #userContainer{
-    margin-top: 50px;
-    margin-left: 200px;
+    margin: 40px;
+    justify-content: flex-end;
 }
 
 #buttons{
