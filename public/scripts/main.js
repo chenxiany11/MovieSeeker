@@ -81,9 +81,10 @@ rhit.MainPageController = class {
 		});
 		rhit.fbMoviesManager.beginListening(this.updateList.bind(this));
 	}
-	searchMovie(i) {
+	searchMovie(arr) {
 		const newList = htmlToElement('<div id="movieListContainer"><div>');
-		const m = rhit.fbMoviesManager.getMovieAtIndex(i);
+		for(let i = 0; i < arr.length; i++){
+		const m = rhit.fbMoviesManager.getMovieAtIndex(arr[i]);
 		console.log(m.movie);
 		console.log(m.type);
 		const newCard = this._createCard(m);
@@ -93,6 +94,7 @@ rhit.MainPageController = class {
 			window.location.href = `/movie.html?id=${m.id}&uid=${rhit.fbAuthManager.uid}`;
 		};
 		newList.appendChild(newCard);
+		}
 		const oldList = document.querySelector("#movieListContainer");
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
@@ -757,14 +759,20 @@ rhit.FbMoviesManager = class {
 	search(name) {
 		console.log("search movie by name: " + `${name}`);
 		const size = this._documentSnapshots.length;
+		let arr = [];
 		for (var i = 0; i < size; i++) {
 			const docSnapshot = this._documentSnapshots[i];
-			if (name == docSnapshot.get(rhit.FB_KEY_NAME)) {
-				console.log(`${name}` + " Movie Found");
-				return i;
-
+			const str = docSnapshot.get(rhit.FB_KEY_NAME);
+			let re = new RegExp('^'+name,"i")
+			console.log(re);
+			console.log(re.test(str));
+			if (re.test(str)) {
+				console.log(`${str}` + " Movie Found");
+				// return i;
+				arr.push(i);
 			}
 		}
+		return arr;
 		console.log("no items found");
 
 	}
