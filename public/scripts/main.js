@@ -521,6 +521,17 @@ rhit.DetailPageController = class {
 			console.log(rating);
 			rhit.fbReviewsManager.add(movie, rating, review);
 		});
+		document.querySelector("#deleteButton").addEventListener("click", (event) => {
+
+			rhit.fbSingleMovieManager.delete().then(function () {
+				console.log("Document successfully deleted!");
+				window.location.href = "/mainpage.html"
+			}).catch(function (error) {
+				console.error("Error removing document: ", error);
+			});;
+
+		});
+
 		document.querySelector("#addFav").addEventListener("click", (event) => {
 			console.log("add fav button clicked");
 
